@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TableLayout;
@@ -50,6 +51,9 @@ public class GameActivity extends AppCompatActivity {
 
     private Long startTime;
     private Handler timerHandler = new Handler();
+
+    private Button menuButton;
+    private Button restartButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -144,13 +148,17 @@ public class GameActivity extends AppCompatActivity {
         p1win = 0;
         p2win = 0;
         retractButton = (ImageButton)findViewById(R.id.btn_retract);
+        menuButton = (Button)findViewById(R.id.btn_menu);
+        restartButton = (Button)findViewById(R.id.btn_restart);
     }
 
+    Long fixedTime;
     private Runnable updateTimer = new Runnable() {
         @Override
         public void run() {
             final TextView time = (TextView)findViewById(R.id.timer);
             Long spentTime = System.currentTimeMillis() - startTime;
+            if (winFlag >=0) spentTime = fixedTime - startTime;
             Long minutes = (spentTime / 1000) / 60;
             Long seconds = (spentTime / 1000) % 60;
             time.setText("Timer: "+minutes+" : "+seconds);
@@ -183,6 +191,11 @@ public class GameActivity extends AppCompatActivity {
         startTime = System.currentTimeMillis();
         timerHandler.removeCallbacks(updateTimer);
         timerHandler.postDelayed(updateTimer, 1000);
+
+        /** Operation visibility initialization chesses **/
+        retractButton.setVisibility(View.VISIBLE);
+        menuButton.setVisibility(View.INVISIBLE);
+        restartButton.setVisibility(View.INVISIBLE);
     }
 
 
@@ -339,13 +352,34 @@ public class GameActivity extends AppCompatActivity {
         retractButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (playerTurn > 0) {
-                    playerTurn--;
-                    int j = moves[playerTurn];
-                    place[j]++;
-                    ImageView img = (ImageView)findViewById(place[j]*10+j);
-                    img.setImageResource(R.drawable.empty);
-                    showPlayerImage(playerTurn%2);
+                if (retractButton.getVisibility() == View.VISIBLE) {
+                    if (playerTurn > 0) {
+                        playerTurn--;
+                        int j = moves[playerTurn];
+                        place[j]++;
+                        ImageView img = (ImageView) findViewById(place[j] * 10 + j);
+                        img.setImageResource(R.drawable.empty);
+                        showPlayerImage(playerTurn % 2);
+                    }
+                }
+            }
+        });
+
+        /** Menu and restart button listeners **/
+        menuButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (menuButton.getVisibility() == View.VISIBLE) {
+                    finish();
+                }
+            }
+        });
+        restartButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (restartButton.getVisibility() == View.VISIBLE) {
+                    emptyInit();
+                    gameStart();
                 }
             }
         });
@@ -354,14 +388,22 @@ public class GameActivity extends AppCompatActivity {
     /*Show the winner*/
     public void showWinner(int winner) {
         String winMsg;
+        fixedTime = System.currentTimeMillis();
+        Long spentTime = fixedTime - startTime;
+        Long minutes = (spentTime / 1000) / 60;
+        Long seconds = (spentTime / 1000) % 60;
+
         if (winner == RED_COLOR) {
-            winMsg = "Winner: Player 1!";
+            winMsg = "WINNER: Player 1!\n\n"+
+                    "TIME USED: "+ minutes +" : "+ seconds;
             p1win++;
         } else if (winner == GREEN_COLOR){
-            winMsg = "Winner: Player 2!";
+            winMsg = "WINNER: Player 2!\n\n" +
+                    "TIME USED: "+ minutes +" : "+ seconds;
             p2win++;
         } else {
-            winMsg = "DRAW !";
+            winMsg = "DRAW !\n\n" +
+                    "TIME USED: "+ minutes +" : "+ seconds;
         }
         new AlertDialog.Builder(this)
                 .setTitle("GAME OVER")
@@ -379,6 +421,14 @@ public class GameActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         finish();
+                    }
+                })
+                .setNeutralButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        menuButton.setVisibility(View.VISIBLE);
+                        restartButton.setVisibility(View.VISIBLE);
+                        retractButton.setVisibility(View.INVISIBLE);
                     }
                 })
                 .show();
