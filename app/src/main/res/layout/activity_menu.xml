@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView android:id="@+id/activity_menu"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/game_bg"
+    android:fillViewport="true">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- Header -->
+        <RelativeLayout android:id="@+id/header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="5dp">
+
+            <!-- Logo Start-->
+            <ImageView android:src="@drawable/header_logo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                />
+            <!-- Logo Ends -->
+            <ImageButton android:id="@+id/icon_help"
+                android:background="@drawable/info"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:layout_marginTop="13dp"
+                android:layout_alignParentRight="true"
+                />
+        </RelativeLayout>
+        <!-- Header ends -->
+
+        <!-- Players' Information Input Starts -->
+        <LinearLayout android:id="@+id/playerInfo"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:layout_below="@+id/header">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/infoBg"
+                android:padding="30dp"
+                android:orientation="vertical">
+
+            <TextView
+                android:text="Player 1"
+                android:textColor="@color/letter"
+                android:textSize="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dip"
+                android:id="@+id/textView_player1" />
+            <TextView
+                android:text="Player Name:"
+                android:textColor="#372c24"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dip"
+                android:id="@+id/textView_name1"
+                android:textSize="18sp"
+                android:textAlignment="viewStart" />
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName"
+                android:id="@+id/editText_player1" />
+            <TextView
+                android:text="UID:"
+                android:textColor="#372c24"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView_UID1"
+                android:textSize="18sp"
+                android:layout_marginTop="5dp" />
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:id="@+id/editText_UID1" />
+
+            <TextView
+                android:text="Player 2"
+                android:textColor="@color/letter"
+                android:textSize="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="25dip"
+                android:id="@+id/textView_player2" />
+            <TextView
+                android:text="Player Name:"
+                android:textColor="#372c24"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dip"
+                android:id="@+id/textView_name2"
+                android:textSize="18sp" />
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName"
+                android:id="@+id/editText_player2" />
+            <TextView
+                android:text="UID:"
+                android:textColor="#372c24"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dip"
+                android:id="@+id/textView_UID2"
+                android:textSize="18sp" />
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:paddingBottom="10dp"
+                android:id="@+id/editText_UID2" />
+
+            </LinearLayout>
+
+            <Button
+                android:text="Start Game"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:id="@+id/btn_startgame"
+                android:padding="10dp"
+                android:layout_marginTop="10dip"
+                android:background="#cbcbf4"/>
+        </LinearLayout>
+        <!-- Players' Information Input Ends-->
+
+        <!-- Footer Start -->
+        <LinearLayout android:id="@+id/footer"
+            android:layout_width="fill_parent"
+            android:layout_alignParentBottom="true"
+            android:background="#FFFFFF"
+            android:orientation="vertical"
+            android:layout_height="20dip">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:text="Made by CYS"/>
+        </LinearLayout>
+        <!-- Footer Ends -->
+
+    </RelativeLayout>
+</ScrollView>
