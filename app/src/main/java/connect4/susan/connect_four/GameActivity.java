@@ -5,6 +5,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Point;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Vibrator;
@@ -26,9 +28,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Edited by Susan on 2016/11/2
+ * Final edition on 2016/11/7
+ * Run on AS 2.2.2
  */
 
 public class GameActivity extends AppCompatActivity {
@@ -54,6 +59,20 @@ public class GameActivity extends AppCompatActivity {
 
     private Button menuButton;
     private Button restartButton;
+
+    //Sound Effect
+    private SoundPool soundPool;
+    private HashMap<Integer, Integer> soundHashMap;
+    private int soundPressID=1, dropID=2, retractID=3, warnID=4, gameResultID = 5, enterID = 6;
+    private AudioManager audioManager;
+    private float curVolumn;
+    private float maxVolumn;
+    private float leftVolumn;
+    private float rightVolumn;
+    private int priority;
+    private int no_loop;
+    private float normal_playback_rate;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -150,6 +169,26 @@ public class GameActivity extends AppCompatActivity {
         retractButton = (ImageButton)findViewById(R.id.btn_retract);
         menuButton = (Button)findViewById(R.id.btn_menu);
         restartButton = (Button)findViewById(R.id.btn_restart);
+
+        // Sound effect initialization
+        soundPool = new SoundPool(6, AudioManager.STREAM_MUSIC, 100);;
+        soundHashMap = new HashMap<Integer, Integer>();
+        soundHashMap.put(soundPressID, soundPool.load(this, R.raw.keypress, 1));
+        soundHashMap.put(dropID, soundPool.load(this, R.raw.drop_sound, 1));
+        soundHashMap.put(retractID, soundPool.load(this, R.raw.retract, 1));
+        soundHashMap.put(warnID, soundPool.load(this, R.raw.light_error, 1));
+        soundHashMap.put(gameResultID, soundPool.load(this, R.raw.get_good_point, 1));
+        soundHashMap.put(enterID, soundPool.load(this, R.raw.click_enter, 1));
+
+        audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+
+        curVolumn = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+        maxVolumn = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        leftVolumn = curVolumn / maxVolumn;
+        rightVolumn = curVolumn / maxVolumn;
+        priority = 1;
+        no_loop = 0;
+        normal_playback_rate = 1f;
     }
 
     Long fixedTime;
@@ -181,11 +220,11 @@ public class GameActivity extends AppCompatActivity {
         }
 
         TextView playerInfo = (TextView)findViewById(R.id.playerInfo1);
-        playerInfo.setText("Player 1: "+p1win + "\n" +
-                        PlayerName1 + "("+UID1+")\n");
+        playerInfo.setText("PLAYER ONE: "+p1win + "\n" +
+                PlayerName1 + "("+UID1+")\n");
         playerInfo = (TextView)findViewById(R.id.playerInfo2);
-        playerInfo.setText("Player 2: "+ p2win + "\n" +
-                        PlayerName2 + "("+UID2+")\n");
+        playerInfo.setText("PLAYER TWO: "+ p2win + "\n" +
+                PlayerName2 + "("+UID2+")\n");
 
         //Timer starts
         startTime = System.currentTimeMillis();
@@ -195,11 +234,12 @@ public class GameActivity extends AppCompatActivity {
         /** Operation visibility initialization chesses **/
         retractButton.setVisibility(View.VISIBLE);
         menuButton.setVisibility(View.INVISIBLE);
-        restartButton.setVisibility(View.INVISIBLE);
+        restartButton.setVisibility(View.VISIBLE);
     }
 
 
     public void showArrow(int columnId){
+
         ImageView imageView;
         for (int j = 0; j < COLUMN_NUM; j++) {
             imageView = (ImageView)findViewById((ROW_NUM+1)*10+j);
@@ -208,12 +248,17 @@ public class GameActivity extends AppCompatActivity {
         if (columnId >= 0){
             imageView = (ImageView)findViewById((ROW_NUM+1)*10+columnId);
             if (place[columnId] > 0) {
+
+                //TODO showarrow sound effect
                 imageView.setImageResource(R.drawable.arrow);
             } else {
                 //Vibration
                 imageView.setImageResource(R.drawable.arrow_error);
                 Vibrator v = (Vibrator)getSystemService(Context.VIBRATOR_SERVICE);
-                v.vibrate(300);
+                v.vibrate(100);
+
+                //TODO show arrow sound effect
+                soundPool.play(soundHashMap.get(warnID), leftVolumn, rightVolumn, priority, no_loop, normal_playback_rate);
             }
             imageView.setVisibility(View.VISIBLE);
         }
@@ -260,7 +305,7 @@ public class GameActivity extends AppCompatActivity {
         for (int i = 0; i < ROW_NUM; i++) {
             for (int j = 0; j < COLUMN_NUM; j++) {
                 if ((winFlag >= 0 && chessColor[i][j] == winFlag) ||
-                 (winFlag < 0 && chessColor[i][j] != EMPTY_COLOR)) {
+                        (winFlag < 0 && chessColor[i][j] != EMPTY_COLOR)) {
                     //Right Upward
                     checkLineForOnePoint(chessColor[i][j],i,j,-1,1);
                     //Right
@@ -323,6 +368,7 @@ public class GameActivity extends AppCompatActivity {
                                 chess.setImageResource(R.drawable.green);
                                 chessColor[place[placeId]-1][placeId] = GREEN_COLOR;
                             }
+                            soundPool.play(soundHashMap.get(dropID), leftVolumn,rightVolumn,priority,no_loop,normal_playback_rate);
                             moves[playerTurn] = placeId;
                             playerTurn++;
                             if (playerTurn == ROW_NUM*COLUMN_NUM){
@@ -353,6 +399,7 @@ public class GameActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (retractButton.getVisibility() == View.VISIBLE) {
+                    soundPool.play(soundHashMap.get(retractID), leftVolumn, rightVolumn, priority, no_loop, normal_playback_rate);
                     if (playerTurn > 0) {
                         playerTurn--;
                         int j = moves[playerTurn];
@@ -370,6 +417,7 @@ public class GameActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (menuButton.getVisibility() == View.VISIBLE) {
+                    soundPool.play(soundHashMap.get(soundPressID), leftVolumn, rightVolumn, priority, no_loop, normal_playback_rate);
                     finish();
                 }
             }
@@ -377,16 +425,17 @@ public class GameActivity extends AppCompatActivity {
         restartButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (restartButton.getVisibility() == View.VISIBLE) {
-                    emptyInit();
-                    gameStart();
-                }
+                soundPool.play(soundHashMap.get(enterID), leftVolumn, rightVolumn, priority, no_loop, normal_playback_rate);
+                emptyInit();
+                gameStart();
             }
         });
     }
 
     /*Show the winner*/
     public void showWinner(int winner) {
+        soundPool.play(soundHashMap.get(gameResultID), leftVolumn,rightVolumn,priority,no_loop,normal_playback_rate);
+
         String winMsg;
         fixedTime = System.currentTimeMillis();
         Long spentTime = fixedTime - startTime;
@@ -394,17 +443,19 @@ public class GameActivity extends AppCompatActivity {
         Long seconds = (spentTime / 1000) % 60;
 
         if (winner == RED_COLOR) {
-            winMsg = "WINNER: Player 1!\n\n"+
+            winMsg = "WINNER: Player ONE, "+PlayerName1+"!\n\n"+
                     "TIME USED: "+ minutes +" : "+ seconds;
             p1win++;
         } else if (winner == GREEN_COLOR){
-            winMsg = "WINNER: Player 2!\n\n" +
+            winMsg = "WINNER: Player TWO, "+PlayerName2+"!\n\n" +
                     "TIME USED: "+ minutes +" : "+ seconds;
             p2win++;
         } else {
-            winMsg = "DRAW !\n\n" +
+            winMsg = "GAME DRAW !\n\n" +
                     "TIME USED: "+ minutes +" : "+ seconds;
         }
+        Vibrator v = (Vibrator)getSystemService(Context.VIBRATOR_SERVICE);
+        v.vibrate(200);
         new AlertDialog.Builder(this)
                 .setTitle("GAME OVER")
                 .setMessage(winMsg)
@@ -413,6 +464,7 @@ public class GameActivity extends AppCompatActivity {
                 .setPositiveButton("Restart",new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        soundPool.play(soundHashMap.get(enterID), leftVolumn, rightVolumn, priority, no_loop, normal_playback_rate);
                         emptyInit();
                         gameStart();
                     }
@@ -420,14 +472,15 @@ public class GameActivity extends AppCompatActivity {
                 .setNegativeButton("Menu",new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        soundPool.play(soundHashMap.get(soundPressID), leftVolumn, rightVolumn, priority, no_loop, normal_playback_rate);
                         finish();
                     }
                 })
                 .setNeutralButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        soundPool.play(soundHashMap.get(soundPressID), leftVolumn, rightVolumn, priority, no_loop, normal_playback_rate);
                         menuButton.setVisibility(View.VISIBLE);
-                        restartButton.setVisibility(View.VISIBLE);
                         retractButton.setVisibility(View.INVISIBLE);
                     }
                 })

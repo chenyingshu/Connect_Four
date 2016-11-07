@@ -68,7 +68,7 @@
                         android:layout_height="wrap_content"
                         android:textColor="@color/letter"
                         android:textSize="16dp"
-                        android:text="PLAYER 1"/>
+                        android:text="PLAYER ONE"/>
                     <ImageView android:id="@+id/playerImage1"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
@@ -86,7 +86,7 @@
                         android:layout_height="wrap_content"
                         android:textColor="@color/letter"
                         android:textAlignment="textEnd"
-                        android:text="PLAYER 2"
+                        android:text="PLAYER TWO"
                         android:textSize="16dp"
                         android:layout_alignParentRight="true"/>
                     <ImageView android:id="@+id/playerImage2"
@@ -112,7 +112,15 @@
                     android:text="Timer: 0 : 0"
                     android:textSize="16dp"
                     android:textColor="@color/letter"
-                    android:layout_alignBottom="@+id/btn_retract"/>
+                    android:layout_alignBottom="@+id/btn_restart"/>
+
+                <ImageButton
+                    android:id="@+id/btn_retract"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginRight="20dip"
+                    android:background="@drawable/retrieve_icon"
+                    android:layout_toLeftOf="@+id/btn_restart"/>
 
                 <Button android:id="@+id/btn_menu"
                     android:layout_width="wrap_content"
@@ -123,30 +131,20 @@
                     android:text="Menu"
                     android:textSize="16dp"
                     android:textColor="@color/letter"
-                    android:background="@color/infoBg"
                     android:layout_toLeftOf="@+id/btn_restart"/>
 
                 <Button android:id="@+id/btn_restart"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="5dp"
+                    android:layout_marginBottom="20dp"
                     android:paddingRight="5dp"
                     android:paddingLeft="5dp"
                     android:text="Restart"
                     android:textSize="16dp"
                     android:textColor="@color/letter"
-                    android:background="@color/infoBg"
-                    android:layout_toLeftOf="@+id/btn_retract"
-                    android:layout_alignParentRight="true"/>
-
-                <ImageButton
-                    android:id="@+id/btn_retract"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/retrieve_icon"
                     android:layout_alignParentTop="true"
-                    android:layout_alignParentEnd="true" />
+                    android:layout_alignParentEnd="true"/>
             </RelativeLayout>
 
         </LinearLayout>
